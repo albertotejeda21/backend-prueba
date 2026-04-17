@@ -17,7 +17,29 @@ app.use((req, res, next) => {
     next();
 });
 
+onst db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 4000,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
+db.connect((err) => {
+    if (err) {
+        console.error('Error al conectar a TiDB:', err.message);
+        return;
+    }
+    console.log('¡Conectado exitosamente a la base de datos en la nube!');
+});
+
+
+
+
+/*
 // conexión a MariaDB
 const db = mysql.createConnection({
     host: "localhost",
@@ -37,7 +59,7 @@ db.connect(err => {
         console.log("Conectado a MariaDB");
     }
 });
-
+*/
 // INSERTAR datos
 app.post("/health", (req, res) => {
     const { steps, heartRate, distance, active_calories, total_calories } = req.body;
