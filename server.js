@@ -76,6 +76,40 @@ app.post("/health", (req, res) => {
 });
 
 
+// REGISTRO:
+app.post("/register", (req, res) => {
+    const { username, password } = req.body;
+    db.query(
+        "INSERT INTO users (username, password) VALUES (?, ?)",
+        [username, password],
+        (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).json({ success: false, message: "El usuario ya existe" });
+                }
+                return res.status(500).json(err);
+            }
+            res.json({ success: true, message: "Usuario creado con éxito" });
+        }
+    );
+});
+
+// LOGIN: 
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    db.query(
+        "SELECT * FROM users WHERE username = ? AND password = ?",
+        [username, password],
+        (err, result) => {
+            if (err) return res.status(500).json(err);
+            if (result.length > 0) {
+                res.json({ success: true, message: "Login correcto" });
+            } else {
+                res.status(401).json({ success: false, message: "Credenciales incorrectas" });
+            }
+        }
+    );
+});
 
 // OBTENER datos
 app.get("/health", (req, res) => {
